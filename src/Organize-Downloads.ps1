@@ -27,8 +27,14 @@ Write-Output ""
 
 $files = Get-ChildItem -Path $Path -File
 
+$filesScanned = 0
+$filesMoved = 0
+$filesConflicted = 0
+$filesFailed = 0
 
 foreach ($file in $files) {
+    $filesScanned++
+
     $extension = $file.Extension.ToLower()
     $categoryName = "Other"
 
@@ -48,6 +54,7 @@ foreach ($file in $files) {
         Category = $categoryName
         Size = $file.Length
         Modified = $file.LastWriteTime
+        Status    = ""
     }
 
     $destinationPath = Join-Path -Path $Path -ChildPath $categoryName
@@ -64,6 +71,9 @@ foreach ($file in $files) {
     $destinationFile = Join-Path -Path $destinationPath -ChildPath $file.Name
 
     if (Test-Path -Path $destinationFile) {
+        $fileInfo.Status = "Conflict"
+        $filesConflicted++
+
         if ($DryRun) {
             Write-Output "[DRY RUN] CONFLICT: $($file.Name) already exists"
         }
@@ -74,14 +84,25 @@ foreach ($file in $files) {
     }
     else {
         if ($DryRun) {
+            $fileInfo.Status = "DryRun"
             Write-Output "[DRY RUN] File $($file.Name) would be moved"
         }
         else {
             Move-Item -Path $file.FullName -Destination $destinationFile
+            $filesMoved++
+            $fileInfo.Status = "Moved"
         }
     }
 
     $fileInfo
 
 }
+
+    Write-Output ""
+    Write-Output "Organization Summary"
+    Write-Output "===================="
+    Write-Output "Files scanned:    $filesScanned"
+    Write-Output "Files moved:      $filesMoved"
+    Write-Output "Conflicts:        $filesConflicted"
+    Write-Output "Failed:           $filesFailed"
 
