@@ -63,11 +63,22 @@ foreach ($file in $files) {
 
     $destinationFile = Join-Path -Path $destinationPath -ChildPath $file.Name
 
-    if ($DryRun) {
-        Write-Output "[DRY RUN] Would move: $($file.Name) to $destinationPath"
+    if (Test-Path -Path $destinationFile) {
+        if ($DryRun) {
+            Write-Output "[DRY RUN] CONFLICT: $($file.Name) already exists"
+        }
+        else {
+            Write-Output "CONFLICT: $($file.Name) already exists"
+            continue
+        }
     }
     else {
-        Move-Item -Path $file.FullName -Destination $destinationFile
+        if ($DryRun) {
+            Write-Output "[DRY RUN] File $($file.Name) would be moved"
+        }
+        else {
+            Move-Item -Path $file.FullName -Destination $destinationFile
+        }
     }
 
     $fileInfo
