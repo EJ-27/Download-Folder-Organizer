@@ -3,8 +3,8 @@ configurable powershell utility that automatically organizes files in a user's d
 
 
 TO ADD:
-- Error handling
+- Error handling [DONE]
 - Configuration
 - Logging 
-- dry-run mode
-- Structured output
+- dry-run mode [DONE]
+- Structured output [DONE]
