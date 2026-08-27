@@ -35,12 +35,15 @@ foreach ($file in $files) {
         
     }
 
+    $fileInfo = [PSCustomObject]@{
+        Name = $file.Name
+        Extension = $file.Extension
+        Category = $categoryName
+        Size = $file.Length
+        Modified = $file.LastWriteTime
+    }
 
-    Write-Output "Name: $($file.Name)"
-    Write-Output "Extension: $($file.Extension)"
-    Write-Output "Category: $categoryName"
-    Write-Output "Size: $($file.Length) bytes"
-    Write-Output "Modified: $($file.LastWriteTime)"
-    Write-Output ""
+    $fileInfo
+
 }
 
