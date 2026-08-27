@@ -4,6 +4,11 @@ param(
     [string]$Path
 )
 
+if (-not (Test-Path -Path $Path -PathType Container)) {
+    Write-Error "The specified path does not exist or is not a directory: $Path"
+    exit 1
+}
+
 $categories = @{
     Images = @(".jpg", ".jpeg", ".png", ".gif", ".webp")
     Documents = @(".pdf", ".doc", ".docx", ".txt", ".xlsx", ".csv")
