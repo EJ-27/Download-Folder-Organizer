@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [string]$Path
+    [string]$Path,
+
+    [switch]$DryRun
 )
 
 if (-not (Test-Path -Path $Path -PathType Container)) {
@@ -46,6 +48,26 @@ foreach ($file in $files) {
         Category = $categoryName
         Size = $file.Length
         Modified = $file.LastWriteTime
+    }
+
+    $destinationPath = Join-Path -Path $Path -ChildPath $categoryName
+
+    if (-not (Test-Path -Path $destinationPath)) {
+        if ($DryRun) {
+            Write-Output "[DRY RUN] Would create directory: $destinationPath"
+        }
+        else {
+            New-Item -ItemType Directory -Path $destinationPath | Out-Null
+        }
+    }
+
+    $destinationFile = Join-Path -Path $destinationPath -ChildPath $file.Name
+
+    if ($DryRun) {
+        Write-Output "[DRY RUN] Would move: $($file.Name) to $destinationPath"
+    }
+    else {
+        Move-Item -Path $file.FullName -Destination $destinationFile
     }
 
     $fileInfo
